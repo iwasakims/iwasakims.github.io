@@ -420,6 +420,21 @@
   </property>
 
   <property>
+    <description>the number of retries to recover from IOException in
+    FileSystemRMStateStore.
+    </description>
+    <name>yarn.resourcemanager.fs.state-store.num-retries</name>
+    <value>0</value>
+  </property>
+
+  <property>
+    <description>Retry interval in milliseconds in FileSystemRMStateStore.
+    </description>
+    <name>yarn.resourcemanager.fs.state-store.retry-interval-ms</name>
+    <value>1000</value>
+  </property>
+
+  <property>
     <description>Local path where the RM state will be stored when using
     org.apache.hadoop.yarn.server.resourcemanager.recovery.LeveldbRMStateStore
     as the value for yarn.resourcemanager.store.class</description>
@@ -1055,6 +1070,20 @@
     CPU cycles. The default value is false i.e. use available resources. Please note that
     turning this flag on may reduce job throughput on the cluster.</description>
     <name>yarn.nodemanager.linux-container-executor.cgroups.strict-resource-usage</name>
+    <value>false</value>
+  </property>
+
+  <property>
+    <description>This flag determines whether memory limit will be set for the Windows Job
+    Object of the containers launched by the default container executor.</description>
+    <name>yarn.nodemanager.windows-container.memory-limit.enabled</name>
+    <value>false</value>
+  </property>
+
+  <property>
+    <description>This flag determines whether CPU limit will be set for the Windows Job
+    Object of the containers launched by the default container executor.</description>
+    <name>yarn.nodemanager.windows-container.cpu-limit.enabled</name>
     <value>false</value>
   </property>
 

@@ -145,6 +145,17 @@
 </property>
 
 <property>
+  <name>dfs.namenode.heartbeat.recheck-interval</name>
+  <value>300000</value>
+  <description>
+    This time decides the interval to check for expired datanodes.
+    With this value and dfs.heartbeat.interval, the interval of
+    deciding the datanode is stale or not is also calculated.
+    The unit of this configuration is millisecond.
+  </description>
+</property>
+
+<property>
   <name>dfs.http.policy</name>
   <value>HTTP_ONLY</value>
   <description>Decide if HTTPS(SSL) is supported on HDFS
@@ -725,10 +736,25 @@
 </property>
 
 <property>
-  <name>dfs.namenode.decommission.nodes.per.interval</name>
-  <value>5</value>
-  <description>The number of nodes namenode checks if decommission is complete
-  in each dfs.namenode.decommission.interval.</description>
+  <name>dfs.namenode.decommission.blocks.per.interval</name>
+  <value>500000</value>
+  <description>The approximate number of blocks to process per 
+      decommission interval, as defined in dfs.namenode.decommission.interval.
+  </description>
+</property>
+
+<property>
+  <name>dfs.namenode.decommission.max.concurrent.tracked.nodes</name>
+  <value>100</value>
+  <description>
+    The maximum number of decommission-in-progress datanodes nodes that will be
+    tracked at one time by the namenode. Tracking a decommission-in-progress
+    datanode consumes additional NN memory proportional to the number of blocks
+    on the datnode. Having a conservative limit reduces the potential impact
+    of decomissioning a large number of nodes at once.
+      
+    A value of 0 means no limit will be enforced.
+  </description>
 </property>
 
 <property>
@@ -1493,6 +1519,17 @@
   <description>
     Comma-delimited set of integers denoting the desired rollover intervals 
     (in seconds) for percentile latency metrics on the Namenode and Datanode.
+    By default, percentile latency metrics are disabled.
+  </description>
+</property>
+
+<property>
+  <name>hadoop.user.group.metrics.percentiles.intervals</name>
+  <value></value>
+  <description>
+    A comma-separated list of the granularity in seconds for the metrics
+    which describe the 50/75/90/95/99th percentile latency for group resolution
+    in milliseconds.
     By default, percentile latency metrics are disabled.
   </description>
 </property>
