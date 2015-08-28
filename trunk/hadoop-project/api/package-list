@@ -27,6 +27,7 @@ org.apache.hadoop.fs.permission
 org.apache.hadoop.fs.s3
 org.apache.hadoop.fs.s3a
 org.apache.hadoop.fs.s3native
+org.apache.hadoop.fs.sftp
 org.apache.hadoop.fs.shell.find
 org.apache.hadoop.fs.swift.auth
 org.apache.hadoop.fs.swift.auth.entities
@@ -40,6 +41,7 @@ org.apache.hadoop.ha.proto
 org.apache.hadoop.ha.protocolPB
 org.apache.hadoop.hdfs
 org.apache.hadoop.hdfs.client
+org.apache.hadoop.hdfs.client.impl
 org.apache.hadoop.hdfs.inotify
 org.apache.hadoop.hdfs.net
 org.apache.hadoop.hdfs.nfs.conf
@@ -64,6 +66,7 @@ org.apache.hadoop.hdfs.server.datanode.fsdataset
 org.apache.hadoop.hdfs.server.datanode.fsdataset.impl
 org.apache.hadoop.hdfs.server.datanode.metrics
 org.apache.hadoop.hdfs.server.datanode.web
+org.apache.hadoop.hdfs.server.datanode.web.dtp
 org.apache.hadoop.hdfs.server.datanode.web.webhdfs
 org.apache.hadoop.hdfs.server.mover
 org.apache.hadoop.hdfs.server.namenode
@@ -93,7 +96,6 @@ org.apache.hadoop.io.serializer.avro
 org.apache.hadoop.ipc.proto
 org.apache.hadoop.ipc.protobuf
 org.apache.hadoop.ipc.protocolPB
-org.apache.hadoop.jmx
 org.apache.hadoop.lib.lang
 org.apache.hadoop.lib.server
 org.apache.hadoop.lib.service
@@ -198,6 +200,7 @@ org.apache.hadoop.security.authentication.util
 org.apache.hadoop.security.proto
 org.apache.hadoop.security.protocolPB
 org.apache.hadoop.security.ssl
+org.apache.hadoop.security.token
 org.apache.hadoop.security.token.delegation.web
 org.apache.hadoop.service
 org.apache.hadoop.streaming
@@ -218,6 +221,7 @@ org.apache.hadoop.tracing
 org.apache.hadoop.typedbytes
 org.apache.hadoop.util
 org.apache.hadoop.util.bloom
+org.apache.hadoop.util.curator
 org.apache.hadoop.util.hash
 org.apache.hadoop.yarn
 org.apache.hadoop.yarn.api
