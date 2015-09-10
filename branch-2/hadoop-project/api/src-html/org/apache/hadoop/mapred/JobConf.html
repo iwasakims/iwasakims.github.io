@@ -2029,8 +2029,13 @@
 <span class="sourceLineNo">2021</span>  }<a name="line.2021"></a>
 <span class="sourceLineNo">2022</span>  <a name="line.2022"></a>
 <span class="sourceLineNo">2023</span><a name="line.2023"></a>
-<span class="sourceLineNo">2024</span>}<a name="line.2024"></a>
-<span class="sourceLineNo">2025</span><a name="line.2025"></a>
+<span class="sourceLineNo">2024</span>  /* For debugging. Dump configurations to system output as XML format. */<a name="line.2024"></a>
+<span class="sourceLineNo">2025</span>  public static void main(String[] args) throws Exception {<a name="line.2025"></a>
+<span class="sourceLineNo">2026</span>    new JobConf(new Configuration()).writeXml(System.out);<a name="line.2026"></a>
+<span class="sourceLineNo">2027</span>  }<a name="line.2027"></a>
+<span class="sourceLineNo">2028</span><a name="line.2028"></a>
+<span class="sourceLineNo">2029</span>}<a name="line.2029"></a>
+<span class="sourceLineNo">2030</span><a name="line.2030"></a>
 
 
 
