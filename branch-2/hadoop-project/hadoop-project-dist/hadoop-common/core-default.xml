@@ -97,6 +97,31 @@
   </description>
 </property>
 
+<property>
+  <name>hadoop.security.dns.interface</name>
+  <description>
+    The name of the Network Interface from which the service should determine
+    its host name for Kerberos login. e.g. eth2. In a multi-homed environment,
+    the setting can be used to affect the _HOST subsitution in the service
+    Kerberos principal. If this configuration value is not set, the service
+    will use its default hostname as returned by
+    InetAddress.getLocalHost().getCanonicalHostName().
+
+    Most clusters will not require this setting.
+  </description>
+</property>
+
+<property>
+  <name>hadoop.security.dns.nameserver</name>
+  <description>
+    The host name or IP address of the name server (DNS) which a service Node
+    should use to determine its own host name for Kerberos Login. Requires
+    hadoop.security.dns.interface.
+
+    Most clusters will not require this setting.
+  </description>
+</property>
+
 <!-- 
 === Multiple group mapping providers configuration sample === 
   This sample illustrates a typical use case for CompositeGroupsMapping where
@@ -298,6 +323,11 @@ for ldap providers in the same way as above does.
     an LDAP server with a non-AD schema, this should be replaced with
     (&amp;(objectClass=inetOrgPerson)(uid={0}). {0} is a special string used to
     denote where the username fits into the filter.
+
+    If the LDAP server supports posixGroups, Hadoop can enable the feature by
+    setting the value of this property to "posixAccount" and the value of
+    the hadoop.security.group.mapping.ldap.search.filter.group property to
+    "posixGroup".
   </description>
 </property>
 
@@ -307,7 +337,9 @@ for ldap providers in the same way as above does.
   <description>
     An additional filter to use when searching for LDAP groups. This should be
     changed when resolving groups against a non-Active Directory installation.
-    posixGroups are currently not a supported group class.
+
+    See the description of hadoop.security.group.mapping.ldap.search.filter.user
+    to enable posixGroups support.
   </description>
 </property>
 
@@ -405,8 +437,8 @@ for ldap providers in the same way as above does.
 </property>
 
 <property>
-  <name>hadoop.work.around.non.threadsafe.getpwuid</name>
-  <value>false</value>
+  <name>hadoop.workaround.non.threadsafe.getpwuid</name>
+  <value>true</value>
   <description>Some operating systems or authentication modules are known to
   have broken implementations of getpwuid_r and getpwgid_r, such that these
   calls are not thread-safe. Symptoms of this problem include JVM crashes
@@ -857,6 +889,15 @@ for ldap providers in the same way as above does.
 </property>
 
 <property>
+  <name>fs.s3a.multiobjectdelete.enable</name>
+  <value>true</value>
+  <description>When enabled, multiple single-object delete requests are replaced by
+    a single 'delete multiple objects'-request, reducing the number of requests.
+    Beware: legacy S3-compatible object stores might not support this request.
+  </description>
+</property>
+
+<property>
   <name>fs.s3a.acl.default</name>
   <description>Set a canned ACL for newly created and copied objects. Value may be private, 
      public-read, public-read-write, authenticated-read, log-delivery-write, 
@@ -909,6 +950,12 @@ for ldap providers in the same way as above does.
   <name>fs.s3a.impl</name>
   <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
   <description>The implementation class of the S3A Filesystem</description>
+</property>
+
+<property>
+  <name>fs.AbstractFileSystem.s3a.impl</name>
+  <value>org.apache.hadoop.fs.s3a.S3A</value>
+  <description>The implementation class of the S3A AbstractFileSystem.</description>
 </property>
 
 <property>
@@ -1032,6 +1079,35 @@ for ldap providers in the same way as above does.
   <name>ipc.client.low-latency</name>
   <value>false</value>
   <description>Use low-latency QoS markers for IPC connections.
+  </description>
+</property>
+
+<property>
+  <name>ipc.client.ping</name>
+  <value>true</value>
+  <description>Send a ping to the server when timeout on reading the response,
+  if set to true. If no failure is detected, the client retries until at least
+  a byte is read.
+  </description>
+</property>
+
+<property>
+  <name>ipc.ping.interval</name>
+  <value>60000</value>
+  <description>Timeout on waiting response from server, in milliseconds.
+  The client will send ping when the interval is passed without receiving bytes,
+  if ipc.client.ping is set to true.
+  </description>
+</property>
+
+<property>
+  <name>ipc.client.rpc-timeout.ms</name>
+  <value>0</value>
+  <description>Timeout on waiting response from server, in milliseconds.
+  Currently this timeout works only when ipc.client.ping is set to true
+  because it uses the same facilities with IPC ping.
+  The timeout overrides the ipc.ping.interval and client will throw exception
+  instead of sending ping when the interval is passed.
   </description>
 </property>
 
@@ -1378,6 +1454,42 @@ for ldap providers in the same way as above does.
     Location of the keytab file with the credentials for the principal.
     Referring to the same keytab file Oozie uses for its Kerberos credentials for Hadoop.
   </description>
+</property>
+
+<!-- HTTP CORS support -->
+<property>
+  <description>Enable/disable the cross-origin (CORS) filter.</description>
+  <name>hadoop.http.cross-origin.enabled</name>
+  <value>false</value>
+</property>
+
+<property>
+  <description>Comma separated list of origins that are allowed for web
+    services needing cross-origin (CORS) support. Wildcards (*) and patterns
+    allowed</description>
+  <name>hadoop.http.cross-origin.allowed-origins</name>
+  <value>*</value>
+</property>
+
+<property>
+  <description>Comma separated list of methods that are allowed for web
+    services needing cross-origin (CORS) support.</description>
+  <name>hadoop.http.cross-origin.allowed-methods</name>
+  <value>GET,POST,HEAD</value>
+</property>
+
+<property>
+  <description>Comma separated list of headers that are allowed for web
+    services needing cross-origin (CORS) support.</description>
+  <name>hadoop.http.cross-origin.allowed-headers</name>
+  <value>X-Requested-With,Content-Type,Accept,Origin</value>
+</property>
+
+<property>
+  <description>The number of seconds a pre-flighted request can be cached
+    for web services needing cross-origin (CORS) support.</description>
+  <name>hadoop.http.cross-origin.max-age</name>
+  <value>1800</value>
 </property>
 
 <property>
@@ -1974,5 +2086,30 @@ for ldap providers in the same way as above does.
       this limit.  The default limit is 100 files. The warning is disabled if
       the limit is 0 or the -safely is not specified in -rm command.
     </description>
+  </property>
+
+  <property>
+    <name>fs.client.htrace.sampler.classes</name>
+    <value></value>
+    <description>The class names of the HTrace Samplers to use for Hadoop
+      filesystem clients.
+    </description>
+  </property>
+
+  <property>
+    <name>hadoop.htrace.span.receiver.classes</name>
+    <value></value>
+    <description>The class names of the Span Receivers to use for Hadoop.
+    </description>
+  </property>
+
+  <property>
+    <description>
+      Enable the "/logs" endpoint on all Hadoop daemons, which serves local
+      logs, but may be considered a security risk due to it listing the contents
+      of a directory.
+    </description>
+    <name>hadoop.http.logs.enabled</name>
+    <value>true</value>
   </property>
 </configuration>

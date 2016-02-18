@@ -99,6 +99,7 @@ org.apache.hadoop.mapreduce.v2.hs.protocolPB
 org.apache.hadoop.mapreduce.v2.hs.server
 org.apache.hadoop.mapreduce.v2.hs.webapp.dao
 org.apache.hadoop.mapreduce.v2.security
+org.apache.hadoop.maven.plugin.cmakebuilder
 org.apache.hadoop.maven.plugin.protoc
 org.apache.hadoop.maven.plugin.util
 org.apache.hadoop.maven.plugin.versioninfo
@@ -146,6 +147,8 @@ org.apache.hadoop.security.authentication.client
 org.apache.hadoop.security.authentication.examples
 org.apache.hadoop.security.authentication.server
 org.apache.hadoop.security.authentication.util
+org.apache.hadoop.security.authorize
+org.apache.hadoop.security.http
 org.apache.hadoop.security.proto
 org.apache.hadoop.security.protocolPB
 org.apache.hadoop.security.ssl
@@ -154,6 +157,7 @@ org.apache.hadoop.security.token.delegation.web
 org.apache.hadoop.service
 org.apache.hadoop.streaming
 org.apache.hadoop.streaming.io
+org.apache.hadoop.tools
 org.apache.hadoop.tools.mapred
 org.apache.hadoop.tools.mapred.lib
 org.apache.hadoop.tools.proto
@@ -184,6 +188,7 @@ org.apache.hadoop.yarn.client.api.async
 org.apache.hadoop.yarn.client.api.async.impl
 org.apache.hadoop.yarn.client.api.impl
 org.apache.hadoop.yarn.client.cli
+org.apache.hadoop.yarn.client.util
 org.apache.hadoop.yarn.conf
 org.apache.hadoop.yarn.event
 org.apache.hadoop.yarn.exceptions
