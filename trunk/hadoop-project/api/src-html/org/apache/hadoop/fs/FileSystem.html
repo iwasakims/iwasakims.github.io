@@ -3192,333 +3192,334 @@
 <span class="sourceLineNo">3184</span>    private static class StatisticsDataReferenceCleaner implements Runnable {<a name="line.3184"></a>
 <span class="sourceLineNo">3185</span>      @Override<a name="line.3185"></a>
 <span class="sourceLineNo">3186</span>      public void run() {<a name="line.3186"></a>
-<span class="sourceLineNo">3187</span>        while (true) {<a name="line.3187"></a>
+<span class="sourceLineNo">3187</span>        while (!Thread.interrupted()) {<a name="line.3187"></a>
 <span class="sourceLineNo">3188</span>          try {<a name="line.3188"></a>
 <span class="sourceLineNo">3189</span>            StatisticsDataReference ref =<a name="line.3189"></a>
 <span class="sourceLineNo">3190</span>                (StatisticsDataReference)STATS_DATA_REF_QUEUE.remove();<a name="line.3190"></a>
 <span class="sourceLineNo">3191</span>            ref.cleanUp();<a name="line.3191"></a>
-<span class="sourceLineNo">3192</span>          } catch (Throwable th) {<a name="line.3192"></a>
-<span class="sourceLineNo">3193</span>            // the cleaner thread should continue to run even if there are<a name="line.3193"></a>
-<span class="sourceLineNo">3194</span>            // exceptions, including InterruptedException<a name="line.3194"></a>
-<span class="sourceLineNo">3195</span>            LOG.warn("exception in the cleaner thread but it will continue to "<a name="line.3195"></a>
-<span class="sourceLineNo">3196</span>                + "run", th);<a name="line.3196"></a>
-<span class="sourceLineNo">3197</span>          }<a name="line.3197"></a>
-<span class="sourceLineNo">3198</span>        }<a name="line.3198"></a>
-<span class="sourceLineNo">3199</span>      }<a name="line.3199"></a>
-<span class="sourceLineNo">3200</span>    }<a name="line.3200"></a>
-<span class="sourceLineNo">3201</span><a name="line.3201"></a>
-<span class="sourceLineNo">3202</span>    /**<a name="line.3202"></a>
-<span class="sourceLineNo">3203</span>     * Get or create the thread-local data associated with the current thread.<a name="line.3203"></a>
-<span class="sourceLineNo">3204</span>     */<a name="line.3204"></a>
-<span class="sourceLineNo">3205</span>    public StatisticsData getThreadStatistics() {<a name="line.3205"></a>
-<span class="sourceLineNo">3206</span>      StatisticsData data = threadData.get();<a name="line.3206"></a>
-<span class="sourceLineNo">3207</span>      if (data == null) {<a name="line.3207"></a>
-<span class="sourceLineNo">3208</span>        data = new StatisticsData();<a name="line.3208"></a>
-<span class="sourceLineNo">3209</span>        threadData.set(data);<a name="line.3209"></a>
-<span class="sourceLineNo">3210</span>        StatisticsDataReference ref =<a name="line.3210"></a>
-<span class="sourceLineNo">3211</span>            new StatisticsDataReference(data, Thread.currentThread());<a name="line.3211"></a>
-<span class="sourceLineNo">3212</span>        synchronized(this) {<a name="line.3212"></a>
-<span class="sourceLineNo">3213</span>          allData.add(ref);<a name="line.3213"></a>
-<span class="sourceLineNo">3214</span>        }<a name="line.3214"></a>
-<span class="sourceLineNo">3215</span>      }<a name="line.3215"></a>
-<span class="sourceLineNo">3216</span>      return data;<a name="line.3216"></a>
-<span class="sourceLineNo">3217</span>    }<a name="line.3217"></a>
-<span class="sourceLineNo">3218</span><a name="line.3218"></a>
-<span class="sourceLineNo">3219</span>    /**<a name="line.3219"></a>
-<span class="sourceLineNo">3220</span>     * Increment the bytes read in the statistics<a name="line.3220"></a>
-<span class="sourceLineNo">3221</span>     * @param newBytes the additional bytes read<a name="line.3221"></a>
-<span class="sourceLineNo">3222</span>     */<a name="line.3222"></a>
-<span class="sourceLineNo">3223</span>    public void incrementBytesRead(long newBytes) {<a name="line.3223"></a>
-<span class="sourceLineNo">3224</span>      getThreadStatistics().bytesRead += newBytes;<a name="line.3224"></a>
-<span class="sourceLineNo">3225</span>    }<a name="line.3225"></a>
-<span class="sourceLineNo">3226</span>    <a name="line.3226"></a>
-<span class="sourceLineNo">3227</span>    /**<a name="line.3227"></a>
-<span class="sourceLineNo">3228</span>     * Increment the bytes written in the statistics<a name="line.3228"></a>
-<span class="sourceLineNo">3229</span>     * @param newBytes the additional bytes written<a name="line.3229"></a>
-<span class="sourceLineNo">3230</span>     */<a name="line.3230"></a>
-<span class="sourceLineNo">3231</span>    public void incrementBytesWritten(long newBytes) {<a name="line.3231"></a>
-<span class="sourceLineNo">3232</span>      getThreadStatistics().bytesWritten += newBytes;<a name="line.3232"></a>
-<span class="sourceLineNo">3233</span>    }<a name="line.3233"></a>
-<span class="sourceLineNo">3234</span>    <a name="line.3234"></a>
-<span class="sourceLineNo">3235</span>    /**<a name="line.3235"></a>
-<span class="sourceLineNo">3236</span>     * Increment the number of read operations<a name="line.3236"></a>
-<span class="sourceLineNo">3237</span>     * @param count number of read operations<a name="line.3237"></a>
-<span class="sourceLineNo">3238</span>     */<a name="line.3238"></a>
-<span class="sourceLineNo">3239</span>    public void incrementReadOps(int count) {<a name="line.3239"></a>
-<span class="sourceLineNo">3240</span>      getThreadStatistics().readOps += count;<a name="line.3240"></a>
-<span class="sourceLineNo">3241</span>    }<a name="line.3241"></a>
-<span class="sourceLineNo">3242</span><a name="line.3242"></a>
-<span class="sourceLineNo">3243</span>    /**<a name="line.3243"></a>
-<span class="sourceLineNo">3244</span>     * Increment the number of large read operations<a name="line.3244"></a>
-<span class="sourceLineNo">3245</span>     * @param count number of large read operations<a name="line.3245"></a>
-<span class="sourceLineNo">3246</span>     */<a name="line.3246"></a>
-<span class="sourceLineNo">3247</span>    public void incrementLargeReadOps(int count) {<a name="line.3247"></a>
-<span class="sourceLineNo">3248</span>      getThreadStatistics().largeReadOps += count;<a name="line.3248"></a>
-<span class="sourceLineNo">3249</span>    }<a name="line.3249"></a>
-<span class="sourceLineNo">3250</span><a name="line.3250"></a>
-<span class="sourceLineNo">3251</span>    /**<a name="line.3251"></a>
-<span class="sourceLineNo">3252</span>     * Increment the number of write operations<a name="line.3252"></a>
-<span class="sourceLineNo">3253</span>     * @param count number of write operations<a name="line.3253"></a>
-<span class="sourceLineNo">3254</span>     */<a name="line.3254"></a>
-<span class="sourceLineNo">3255</span>    public void incrementWriteOps(int count) {<a name="line.3255"></a>
-<span class="sourceLineNo">3256</span>      getThreadStatistics().writeOps += count;<a name="line.3256"></a>
-<span class="sourceLineNo">3257</span>    }<a name="line.3257"></a>
-<span class="sourceLineNo">3258</span><a name="line.3258"></a>
-<span class="sourceLineNo">3259</span>    /**<a name="line.3259"></a>
-<span class="sourceLineNo">3260</span>     * Apply the given aggregator to all StatisticsData objects associated with<a name="line.3260"></a>
-<span class="sourceLineNo">3261</span>     * this Statistics object.<a name="line.3261"></a>
-<span class="sourceLineNo">3262</span>     *<a name="line.3262"></a>
-<span class="sourceLineNo">3263</span>     * For each StatisticsData object, we will call accept on the visitor.<a name="line.3263"></a>
-<span class="sourceLineNo">3264</span>     * Finally, at the end, we will call aggregate to get the final total. <a name="line.3264"></a>
-<span class="sourceLineNo">3265</span>     *<a name="line.3265"></a>
-<span class="sourceLineNo">3266</span>     * @param         visitor to use.<a name="line.3266"></a>
-<span class="sourceLineNo">3267</span>     * @return        The total.<a name="line.3267"></a>
-<span class="sourceLineNo">3268</span>     */<a name="line.3268"></a>
-<span class="sourceLineNo">3269</span>    private synchronized &lt;T&gt; T visitAll(StatisticsAggregator&lt;T&gt; visitor) {<a name="line.3269"></a>
-<span class="sourceLineNo">3270</span>      visitor.accept(rootData);<a name="line.3270"></a>
-<span class="sourceLineNo">3271</span>      for (StatisticsDataReference ref: allData) {<a name="line.3271"></a>
-<span class="sourceLineNo">3272</span>        StatisticsData data = ref.getData();<a name="line.3272"></a>
-<span class="sourceLineNo">3273</span>        visitor.accept(data);<a name="line.3273"></a>
-<span class="sourceLineNo">3274</span>      }<a name="line.3274"></a>
-<span class="sourceLineNo">3275</span>      return visitor.aggregate();<a name="line.3275"></a>
-<span class="sourceLineNo">3276</span>    }<a name="line.3276"></a>
-<span class="sourceLineNo">3277</span><a name="line.3277"></a>
-<span class="sourceLineNo">3278</span>    /**<a name="line.3278"></a>
-<span class="sourceLineNo">3279</span>     * Get the total number of bytes read<a name="line.3279"></a>
-<span class="sourceLineNo">3280</span>     * @return the number of bytes<a name="line.3280"></a>
-<span class="sourceLineNo">3281</span>     */<a name="line.3281"></a>
-<span class="sourceLineNo">3282</span>    public long getBytesRead() {<a name="line.3282"></a>
-<span class="sourceLineNo">3283</span>      return visitAll(new StatisticsAggregator&lt;Long&gt;() {<a name="line.3283"></a>
-<span class="sourceLineNo">3284</span>        private long bytesRead = 0;<a name="line.3284"></a>
-<span class="sourceLineNo">3285</span><a name="line.3285"></a>
-<span class="sourceLineNo">3286</span>        @Override<a name="line.3286"></a>
-<span class="sourceLineNo">3287</span>        public void accept(StatisticsData data) {<a name="line.3287"></a>
-<span class="sourceLineNo">3288</span>          bytesRead += data.bytesRead;<a name="line.3288"></a>
-<span class="sourceLineNo">3289</span>        }<a name="line.3289"></a>
-<span class="sourceLineNo">3290</span><a name="line.3290"></a>
-<span class="sourceLineNo">3291</span>        public Long aggregate() {<a name="line.3291"></a>
-<span class="sourceLineNo">3292</span>          return bytesRead;<a name="line.3292"></a>
-<span class="sourceLineNo">3293</span>        }<a name="line.3293"></a>
-<span class="sourceLineNo">3294</span>      });<a name="line.3294"></a>
-<span class="sourceLineNo">3295</span>    }<a name="line.3295"></a>
-<span class="sourceLineNo">3296</span>    <a name="line.3296"></a>
-<span class="sourceLineNo">3297</span>    /**<a name="line.3297"></a>
-<span class="sourceLineNo">3298</span>     * Get the total number of bytes written<a name="line.3298"></a>
-<span class="sourceLineNo">3299</span>     * @return the number of bytes<a name="line.3299"></a>
-<span class="sourceLineNo">3300</span>     */<a name="line.3300"></a>
-<span class="sourceLineNo">3301</span>    public long getBytesWritten() {<a name="line.3301"></a>
-<span class="sourceLineNo">3302</span>      return visitAll(new StatisticsAggregator&lt;Long&gt;() {<a name="line.3302"></a>
-<span class="sourceLineNo">3303</span>        private long bytesWritten = 0;<a name="line.3303"></a>
-<span class="sourceLineNo">3304</span><a name="line.3304"></a>
-<span class="sourceLineNo">3305</span>        @Override<a name="line.3305"></a>
-<span class="sourceLineNo">3306</span>        public void accept(StatisticsData data) {<a name="line.3306"></a>
-<span class="sourceLineNo">3307</span>          bytesWritten += data.bytesWritten;<a name="line.3307"></a>
-<span class="sourceLineNo">3308</span>        }<a name="line.3308"></a>
-<span class="sourceLineNo">3309</span><a name="line.3309"></a>
-<span class="sourceLineNo">3310</span>        public Long aggregate() {<a name="line.3310"></a>
-<span class="sourceLineNo">3311</span>          return bytesWritten;<a name="line.3311"></a>
-<span class="sourceLineNo">3312</span>        }<a name="line.3312"></a>
-<span class="sourceLineNo">3313</span>      });<a name="line.3313"></a>
-<span class="sourceLineNo">3314</span>    }<a name="line.3314"></a>
-<span class="sourceLineNo">3315</span>    <a name="line.3315"></a>
-<span class="sourceLineNo">3316</span>    /**<a name="line.3316"></a>
-<span class="sourceLineNo">3317</span>     * Get the number of file system read operations such as list files<a name="line.3317"></a>
-<span class="sourceLineNo">3318</span>     * @return number of read operations<a name="line.3318"></a>
-<span class="sourceLineNo">3319</span>     */<a name="line.3319"></a>
-<span class="sourceLineNo">3320</span>    public int getReadOps() {<a name="line.3320"></a>
-<span class="sourceLineNo">3321</span>      return visitAll(new StatisticsAggregator&lt;Integer&gt;() {<a name="line.3321"></a>
-<span class="sourceLineNo">3322</span>        private int readOps = 0;<a name="line.3322"></a>
-<span class="sourceLineNo">3323</span><a name="line.3323"></a>
-<span class="sourceLineNo">3324</span>        @Override<a name="line.3324"></a>
-<span class="sourceLineNo">3325</span>        public void accept(StatisticsData data) {<a name="line.3325"></a>
-<span class="sourceLineNo">3326</span>          readOps += data.readOps;<a name="line.3326"></a>
-<span class="sourceLineNo">3327</span>          readOps += data.largeReadOps;<a name="line.3327"></a>
-<span class="sourceLineNo">3328</span>        }<a name="line.3328"></a>
-<span class="sourceLineNo">3329</span><a name="line.3329"></a>
-<span class="sourceLineNo">3330</span>        public Integer aggregate() {<a name="line.3330"></a>
-<span class="sourceLineNo">3331</span>          return readOps;<a name="line.3331"></a>
-<span class="sourceLineNo">3332</span>        }<a name="line.3332"></a>
-<span class="sourceLineNo">3333</span>      });<a name="line.3333"></a>
-<span class="sourceLineNo">3334</span>    }<a name="line.3334"></a>
-<span class="sourceLineNo">3335</span><a name="line.3335"></a>
-<span class="sourceLineNo">3336</span>    /**<a name="line.3336"></a>
-<span class="sourceLineNo">3337</span>     * Get the number of large file system read operations such as list files<a name="line.3337"></a>
-<span class="sourceLineNo">3338</span>     * under a large directory<a name="line.3338"></a>
-<span class="sourceLineNo">3339</span>     * @return number of large read operations<a name="line.3339"></a>
-<span class="sourceLineNo">3340</span>     */<a name="line.3340"></a>
-<span class="sourceLineNo">3341</span>    public int getLargeReadOps() {<a name="line.3341"></a>
-<span class="sourceLineNo">3342</span>      return visitAll(new StatisticsAggregator&lt;Integer&gt;() {<a name="line.3342"></a>
-<span class="sourceLineNo">3343</span>        private int largeReadOps = 0;<a name="line.3343"></a>
-<span class="sourceLineNo">3344</span><a name="line.3344"></a>
-<span class="sourceLineNo">3345</span>        @Override<a name="line.3345"></a>
-<span class="sourceLineNo">3346</span>        public void accept(StatisticsData data) {<a name="line.3346"></a>
-<span class="sourceLineNo">3347</span>          largeReadOps += data.largeReadOps;<a name="line.3347"></a>
-<span class="sourceLineNo">3348</span>        }<a name="line.3348"></a>
-<span class="sourceLineNo">3349</span><a name="line.3349"></a>
-<span class="sourceLineNo">3350</span>        public Integer aggregate() {<a name="line.3350"></a>
-<span class="sourceLineNo">3351</span>          return largeReadOps;<a name="line.3351"></a>
-<span class="sourceLineNo">3352</span>        }<a name="line.3352"></a>
-<span class="sourceLineNo">3353</span>      });<a name="line.3353"></a>
-<span class="sourceLineNo">3354</span>    }<a name="line.3354"></a>
-<span class="sourceLineNo">3355</span><a name="line.3355"></a>
-<span class="sourceLineNo">3356</span>    /**<a name="line.3356"></a>
-<span class="sourceLineNo">3357</span>     * Get the number of file system write operations such as create, append <a name="line.3357"></a>
-<span class="sourceLineNo">3358</span>     * rename etc.<a name="line.3358"></a>
-<span class="sourceLineNo">3359</span>     * @return number of write operations<a name="line.3359"></a>
-<span class="sourceLineNo">3360</span>     */<a name="line.3360"></a>
-<span class="sourceLineNo">3361</span>    public int getWriteOps() {<a name="line.3361"></a>
-<span class="sourceLineNo">3362</span>      return visitAll(new StatisticsAggregator&lt;Integer&gt;() {<a name="line.3362"></a>
-<span class="sourceLineNo">3363</span>        private int writeOps = 0;<a name="line.3363"></a>
-<span class="sourceLineNo">3364</span><a name="line.3364"></a>
-<span class="sourceLineNo">3365</span>        @Override<a name="line.3365"></a>
-<span class="sourceLineNo">3366</span>        public void accept(StatisticsData data) {<a name="line.3366"></a>
-<span class="sourceLineNo">3367</span>          writeOps += data.writeOps;<a name="line.3367"></a>
-<span class="sourceLineNo">3368</span>        }<a name="line.3368"></a>
-<span class="sourceLineNo">3369</span><a name="line.3369"></a>
-<span class="sourceLineNo">3370</span>        public Integer aggregate() {<a name="line.3370"></a>
-<span class="sourceLineNo">3371</span>          return writeOps;<a name="line.3371"></a>
-<span class="sourceLineNo">3372</span>        }<a name="line.3372"></a>
-<span class="sourceLineNo">3373</span>      });<a name="line.3373"></a>
-<span class="sourceLineNo">3374</span>    }<a name="line.3374"></a>
-<span class="sourceLineNo">3375</span><a name="line.3375"></a>
+<span class="sourceLineNo">3192</span>          } catch (InterruptedException ie) {<a name="line.3192"></a>
+<span class="sourceLineNo">3193</span>            LOG.warn("Cleaner thread interrupted, will stop", ie);<a name="line.3193"></a>
+<span class="sourceLineNo">3194</span>            Thread.currentThread().interrupt();<a name="line.3194"></a>
+<span class="sourceLineNo">3195</span>          } catch (Throwable th) {<a name="line.3195"></a>
+<span class="sourceLineNo">3196</span>            LOG.warn("Exception in the cleaner thread but it will continue to "<a name="line.3196"></a>
+<span class="sourceLineNo">3197</span>                + "run", th);<a name="line.3197"></a>
+<span class="sourceLineNo">3198</span>          }<a name="line.3198"></a>
+<span class="sourceLineNo">3199</span>        }<a name="line.3199"></a>
+<span class="sourceLineNo">3200</span>      }<a name="line.3200"></a>
+<span class="sourceLineNo">3201</span>    }<a name="line.3201"></a>
+<span class="sourceLineNo">3202</span><a name="line.3202"></a>
+<span class="sourceLineNo">3203</span>    /**<a name="line.3203"></a>
+<span class="sourceLineNo">3204</span>     * Get or create the thread-local data associated with the current thread.<a name="line.3204"></a>
+<span class="sourceLineNo">3205</span>     */<a name="line.3205"></a>
+<span class="sourceLineNo">3206</span>    public StatisticsData getThreadStatistics() {<a name="line.3206"></a>
+<span class="sourceLineNo">3207</span>      StatisticsData data = threadData.get();<a name="line.3207"></a>
+<span class="sourceLineNo">3208</span>      if (data == null) {<a name="line.3208"></a>
+<span class="sourceLineNo">3209</span>        data = new StatisticsData();<a name="line.3209"></a>
+<span class="sourceLineNo">3210</span>        threadData.set(data);<a name="line.3210"></a>
+<span class="sourceLineNo">3211</span>        StatisticsDataReference ref =<a name="line.3211"></a>
+<span class="sourceLineNo">3212</span>            new StatisticsDataReference(data, Thread.currentThread());<a name="line.3212"></a>
+<span class="sourceLineNo">3213</span>        synchronized(this) {<a name="line.3213"></a>
+<span class="sourceLineNo">3214</span>          allData.add(ref);<a name="line.3214"></a>
+<span class="sourceLineNo">3215</span>        }<a name="line.3215"></a>
+<span class="sourceLineNo">3216</span>      }<a name="line.3216"></a>
+<span class="sourceLineNo">3217</span>      return data;<a name="line.3217"></a>
+<span class="sourceLineNo">3218</span>    }<a name="line.3218"></a>
+<span class="sourceLineNo">3219</span><a name="line.3219"></a>
+<span class="sourceLineNo">3220</span>    /**<a name="line.3220"></a>
+<span class="sourceLineNo">3221</span>     * Increment the bytes read in the statistics<a name="line.3221"></a>
+<span class="sourceLineNo">3222</span>     * @param newBytes the additional bytes read<a name="line.3222"></a>
+<span class="sourceLineNo">3223</span>     */<a name="line.3223"></a>
+<span class="sourceLineNo">3224</span>    public void incrementBytesRead(long newBytes) {<a name="line.3224"></a>
+<span class="sourceLineNo">3225</span>      getThreadStatistics().bytesRead += newBytes;<a name="line.3225"></a>
+<span class="sourceLineNo">3226</span>    }<a name="line.3226"></a>
+<span class="sourceLineNo">3227</span>    <a name="line.3227"></a>
+<span class="sourceLineNo">3228</span>    /**<a name="line.3228"></a>
+<span class="sourceLineNo">3229</span>     * Increment the bytes written in the statistics<a name="line.3229"></a>
+<span class="sourceLineNo">3230</span>     * @param newBytes the additional bytes written<a name="line.3230"></a>
+<span class="sourceLineNo">3231</span>     */<a name="line.3231"></a>
+<span class="sourceLineNo">3232</span>    public void incrementBytesWritten(long newBytes) {<a name="line.3232"></a>
+<span class="sourceLineNo">3233</span>      getThreadStatistics().bytesWritten += newBytes;<a name="line.3233"></a>
+<span class="sourceLineNo">3234</span>    }<a name="line.3234"></a>
+<span class="sourceLineNo">3235</span>    <a name="line.3235"></a>
+<span class="sourceLineNo">3236</span>    /**<a name="line.3236"></a>
+<span class="sourceLineNo">3237</span>     * Increment the number of read operations<a name="line.3237"></a>
+<span class="sourceLineNo">3238</span>     * @param count number of read operations<a name="line.3238"></a>
+<span class="sourceLineNo">3239</span>     */<a name="line.3239"></a>
+<span class="sourceLineNo">3240</span>    public void incrementReadOps(int count) {<a name="line.3240"></a>
+<span class="sourceLineNo">3241</span>      getThreadStatistics().readOps += count;<a name="line.3241"></a>
+<span class="sourceLineNo">3242</span>    }<a name="line.3242"></a>
+<span class="sourceLineNo">3243</span><a name="line.3243"></a>
+<span class="sourceLineNo">3244</span>    /**<a name="line.3244"></a>
+<span class="sourceLineNo">3245</span>     * Increment the number of large read operations<a name="line.3245"></a>
+<span class="sourceLineNo">3246</span>     * @param count number of large read operations<a name="line.3246"></a>
+<span class="sourceLineNo">3247</span>     */<a name="line.3247"></a>
+<span class="sourceLineNo">3248</span>    public void incrementLargeReadOps(int count) {<a name="line.3248"></a>
+<span class="sourceLineNo">3249</span>      getThreadStatistics().largeReadOps += count;<a name="line.3249"></a>
+<span class="sourceLineNo">3250</span>    }<a name="line.3250"></a>
+<span class="sourceLineNo">3251</span><a name="line.3251"></a>
+<span class="sourceLineNo">3252</span>    /**<a name="line.3252"></a>
+<span class="sourceLineNo">3253</span>     * Increment the number of write operations<a name="line.3253"></a>
+<span class="sourceLineNo">3254</span>     * @param count number of write operations<a name="line.3254"></a>
+<span class="sourceLineNo">3255</span>     */<a name="line.3255"></a>
+<span class="sourceLineNo">3256</span>    public void incrementWriteOps(int count) {<a name="line.3256"></a>
+<span class="sourceLineNo">3257</span>      getThreadStatistics().writeOps += count;<a name="line.3257"></a>
+<span class="sourceLineNo">3258</span>    }<a name="line.3258"></a>
+<span class="sourceLineNo">3259</span><a name="line.3259"></a>
+<span class="sourceLineNo">3260</span>    /**<a name="line.3260"></a>
+<span class="sourceLineNo">3261</span>     * Apply the given aggregator to all StatisticsData objects associated with<a name="line.3261"></a>
+<span class="sourceLineNo">3262</span>     * this Statistics object.<a name="line.3262"></a>
+<span class="sourceLineNo">3263</span>     *<a name="line.3263"></a>
+<span class="sourceLineNo">3264</span>     * For each StatisticsData object, we will call accept on the visitor.<a name="line.3264"></a>
+<span class="sourceLineNo">3265</span>     * Finally, at the end, we will call aggregate to get the final total. <a name="line.3265"></a>
+<span class="sourceLineNo">3266</span>     *<a name="line.3266"></a>
+<span class="sourceLineNo">3267</span>     * @param         visitor to use.<a name="line.3267"></a>
+<span class="sourceLineNo">3268</span>     * @return        The total.<a name="line.3268"></a>
+<span class="sourceLineNo">3269</span>     */<a name="line.3269"></a>
+<span class="sourceLineNo">3270</span>    private synchronized &lt;T&gt; T visitAll(StatisticsAggregator&lt;T&gt; visitor) {<a name="line.3270"></a>
+<span class="sourceLineNo">3271</span>      visitor.accept(rootData);<a name="line.3271"></a>
+<span class="sourceLineNo">3272</span>      for (StatisticsDataReference ref: allData) {<a name="line.3272"></a>
+<span class="sourceLineNo">3273</span>        StatisticsData data = ref.getData();<a name="line.3273"></a>
+<span class="sourceLineNo">3274</span>        visitor.accept(data);<a name="line.3274"></a>
+<span class="sourceLineNo">3275</span>      }<a name="line.3275"></a>
+<span class="sourceLineNo">3276</span>      return visitor.aggregate();<a name="line.3276"></a>
+<span class="sourceLineNo">3277</span>    }<a name="line.3277"></a>
+<span class="sourceLineNo">3278</span><a name="line.3278"></a>
+<span class="sourceLineNo">3279</span>    /**<a name="line.3279"></a>
+<span class="sourceLineNo">3280</span>     * Get the total number of bytes read<a name="line.3280"></a>
+<span class="sourceLineNo">3281</span>     * @return the number of bytes<a name="line.3281"></a>
+<span class="sourceLineNo">3282</span>     */<a name="line.3282"></a>
+<span class="sourceLineNo">3283</span>    public long getBytesRead() {<a name="line.3283"></a>
+<span class="sourceLineNo">3284</span>      return visitAll(new StatisticsAggregator&lt;Long&gt;() {<a name="line.3284"></a>
+<span class="sourceLineNo">3285</span>        private long bytesRead = 0;<a name="line.3285"></a>
+<span class="sourceLineNo">3286</span><a name="line.3286"></a>
+<span class="sourceLineNo">3287</span>        @Override<a name="line.3287"></a>
+<span class="sourceLineNo">3288</span>        public void accept(StatisticsData data) {<a name="line.3288"></a>
+<span class="sourceLineNo">3289</span>          bytesRead += data.bytesRead;<a name="line.3289"></a>
+<span class="sourceLineNo">3290</span>        }<a name="line.3290"></a>
+<span class="sourceLineNo">3291</span><a name="line.3291"></a>
+<span class="sourceLineNo">3292</span>        public Long aggregate() {<a name="line.3292"></a>
+<span class="sourceLineNo">3293</span>          return bytesRead;<a name="line.3293"></a>
+<span class="sourceLineNo">3294</span>        }<a name="line.3294"></a>
+<span class="sourceLineNo">3295</span>      });<a name="line.3295"></a>
+<span class="sourceLineNo">3296</span>    }<a name="line.3296"></a>
+<span class="sourceLineNo">3297</span>    <a name="line.3297"></a>
+<span class="sourceLineNo">3298</span>    /**<a name="line.3298"></a>
+<span class="sourceLineNo">3299</span>     * Get the total number of bytes written<a name="line.3299"></a>
+<span class="sourceLineNo">3300</span>     * @return the number of bytes<a name="line.3300"></a>
+<span class="sourceLineNo">3301</span>     */<a name="line.3301"></a>
+<span class="sourceLineNo">3302</span>    public long getBytesWritten() {<a name="line.3302"></a>
+<span class="sourceLineNo">3303</span>      return visitAll(new StatisticsAggregator&lt;Long&gt;() {<a name="line.3303"></a>
+<span class="sourceLineNo">3304</span>        private long bytesWritten = 0;<a name="line.3304"></a>
+<span class="sourceLineNo">3305</span><a name="line.3305"></a>
+<span class="sourceLineNo">3306</span>        @Override<a name="line.3306"></a>
+<span class="sourceLineNo">3307</span>        public void accept(StatisticsData data) {<a name="line.3307"></a>
+<span class="sourceLineNo">3308</span>          bytesWritten += data.bytesWritten;<a name="line.3308"></a>
+<span class="sourceLineNo">3309</span>        }<a name="line.3309"></a>
+<span class="sourceLineNo">3310</span><a name="line.3310"></a>
+<span class="sourceLineNo">3311</span>        public Long aggregate() {<a name="line.3311"></a>
+<span class="sourceLineNo">3312</span>          return bytesWritten;<a name="line.3312"></a>
+<span class="sourceLineNo">3313</span>        }<a name="line.3313"></a>
+<span class="sourceLineNo">3314</span>      });<a name="line.3314"></a>
+<span class="sourceLineNo">3315</span>    }<a name="line.3315"></a>
+<span class="sourceLineNo">3316</span>    <a name="line.3316"></a>
+<span class="sourceLineNo">3317</span>    /**<a name="line.3317"></a>
+<span class="sourceLineNo">3318</span>     * Get the number of file system read operations such as list files<a name="line.3318"></a>
+<span class="sourceLineNo">3319</span>     * @return number of read operations<a name="line.3319"></a>
+<span class="sourceLineNo">3320</span>     */<a name="line.3320"></a>
+<span class="sourceLineNo">3321</span>    public int getReadOps() {<a name="line.3321"></a>
+<span class="sourceLineNo">3322</span>      return visitAll(new StatisticsAggregator&lt;Integer&gt;() {<a name="line.3322"></a>
+<span class="sourceLineNo">3323</span>        private int readOps = 0;<a name="line.3323"></a>
+<span class="sourceLineNo">3324</span><a name="line.3324"></a>
+<span class="sourceLineNo">3325</span>        @Override<a name="line.3325"></a>
+<span class="sourceLineNo">3326</span>        public void accept(StatisticsData data) {<a name="line.3326"></a>
+<span class="sourceLineNo">3327</span>          readOps += data.readOps;<a name="line.3327"></a>
+<span class="sourceLineNo">3328</span>          readOps += data.largeReadOps;<a name="line.3328"></a>
+<span class="sourceLineNo">3329</span>        }<a name="line.3329"></a>
+<span class="sourceLineNo">3330</span><a name="line.3330"></a>
+<span class="sourceLineNo">3331</span>        public Integer aggregate() {<a name="line.3331"></a>
+<span class="sourceLineNo">3332</span>          return readOps;<a name="line.3332"></a>
+<span class="sourceLineNo">3333</span>        }<a name="line.3333"></a>
+<span class="sourceLineNo">3334</span>      });<a name="line.3334"></a>
+<span class="sourceLineNo">3335</span>    }<a name="line.3335"></a>
+<span class="sourceLineNo">3336</span><a name="line.3336"></a>
+<span class="sourceLineNo">3337</span>    /**<a name="line.3337"></a>
+<span class="sourceLineNo">3338</span>     * Get the number of large file system read operations such as list files<a name="line.3338"></a>
+<span class="sourceLineNo">3339</span>     * under a large directory<a name="line.3339"></a>
+<span class="sourceLineNo">3340</span>     * @return number of large read operations<a name="line.3340"></a>
+<span class="sourceLineNo">3341</span>     */<a name="line.3341"></a>
+<span class="sourceLineNo">3342</span>    public int getLargeReadOps() {<a name="line.3342"></a>
+<span class="sourceLineNo">3343</span>      return visitAll(new StatisticsAggregator&lt;Integer&gt;() {<a name="line.3343"></a>
+<span class="sourceLineNo">3344</span>        private int largeReadOps = 0;<a name="line.3344"></a>
+<span class="sourceLineNo">3345</span><a name="line.3345"></a>
+<span class="sourceLineNo">3346</span>        @Override<a name="line.3346"></a>
+<span class="sourceLineNo">3347</span>        public void accept(StatisticsData data) {<a name="line.3347"></a>
+<span class="sourceLineNo">3348</span>          largeReadOps += data.largeReadOps;<a name="line.3348"></a>
+<span class="sourceLineNo">3349</span>        }<a name="line.3349"></a>
+<span class="sourceLineNo">3350</span><a name="line.3350"></a>
+<span class="sourceLineNo">3351</span>        public Integer aggregate() {<a name="line.3351"></a>
+<span class="sourceLineNo">3352</span>          return largeReadOps;<a name="line.3352"></a>
+<span class="sourceLineNo">3353</span>        }<a name="line.3353"></a>
+<span class="sourceLineNo">3354</span>      });<a name="line.3354"></a>
+<span class="sourceLineNo">3355</span>    }<a name="line.3355"></a>
+<span class="sourceLineNo">3356</span><a name="line.3356"></a>
+<span class="sourceLineNo">3357</span>    /**<a name="line.3357"></a>
+<span class="sourceLineNo">3358</span>     * Get the number of file system write operations such as create, append <a name="line.3358"></a>
+<span class="sourceLineNo">3359</span>     * rename etc.<a name="line.3359"></a>
+<span class="sourceLineNo">3360</span>     * @return number of write operations<a name="line.3360"></a>
+<span class="sourceLineNo">3361</span>     */<a name="line.3361"></a>
+<span class="sourceLineNo">3362</span>    public int getWriteOps() {<a name="line.3362"></a>
+<span class="sourceLineNo">3363</span>      return visitAll(new StatisticsAggregator&lt;Integer&gt;() {<a name="line.3363"></a>
+<span class="sourceLineNo">3364</span>        private int writeOps = 0;<a name="line.3364"></a>
+<span class="sourceLineNo">3365</span><a name="line.3365"></a>
+<span class="sourceLineNo">3366</span>        @Override<a name="line.3366"></a>
+<span class="sourceLineNo">3367</span>        public void accept(StatisticsData data) {<a name="line.3367"></a>
+<span class="sourceLineNo">3368</span>          writeOps += data.writeOps;<a name="line.3368"></a>
+<span class="sourceLineNo">3369</span>        }<a name="line.3369"></a>
+<span class="sourceLineNo">3370</span><a name="line.3370"></a>
+<span class="sourceLineNo">3371</span>        public Integer aggregate() {<a name="line.3371"></a>
+<span class="sourceLineNo">3372</span>          return writeOps;<a name="line.3372"></a>
+<span class="sourceLineNo">3373</span>        }<a name="line.3373"></a>
+<span class="sourceLineNo">3374</span>      });<a name="line.3374"></a>
+<span class="sourceLineNo">3375</span>    }<a name="line.3375"></a>
 <span class="sourceLineNo">3376</span><a name="line.3376"></a>
-<span class="sourceLineNo">3377</span>    @Override<a name="line.3377"></a>
-<span class="sourceLineNo">3378</span>    public String toString() {<a name="line.3378"></a>
-<span class="sourceLineNo">3379</span>      return visitAll(new StatisticsAggregator&lt;String&gt;() {<a name="line.3379"></a>
-<span class="sourceLineNo">3380</span>        private StatisticsData total = new StatisticsData();<a name="line.3380"></a>
-<span class="sourceLineNo">3381</span><a name="line.3381"></a>
-<span class="sourceLineNo">3382</span>        @Override<a name="line.3382"></a>
-<span class="sourceLineNo">3383</span>        public void accept(StatisticsData data) {<a name="line.3383"></a>
-<span class="sourceLineNo">3384</span>          total.add(data);<a name="line.3384"></a>
-<span class="sourceLineNo">3385</span>        }<a name="line.3385"></a>
-<span class="sourceLineNo">3386</span><a name="line.3386"></a>
-<span class="sourceLineNo">3387</span>        public String aggregate() {<a name="line.3387"></a>
-<span class="sourceLineNo">3388</span>          return total.toString();<a name="line.3388"></a>
-<span class="sourceLineNo">3389</span>        }<a name="line.3389"></a>
-<span class="sourceLineNo">3390</span>      });<a name="line.3390"></a>
-<span class="sourceLineNo">3391</span>    }<a name="line.3391"></a>
-<span class="sourceLineNo">3392</span><a name="line.3392"></a>
-<span class="sourceLineNo">3393</span>    /**<a name="line.3393"></a>
-<span class="sourceLineNo">3394</span>     * Resets all statistics to 0.<a name="line.3394"></a>
-<span class="sourceLineNo">3395</span>     *<a name="line.3395"></a>
-<span class="sourceLineNo">3396</span>     * In order to reset, we add up all the thread-local statistics data, and<a name="line.3396"></a>
-<span class="sourceLineNo">3397</span>     * set rootData to the negative of that.<a name="line.3397"></a>
-<span class="sourceLineNo">3398</span>     *<a name="line.3398"></a>
-<span class="sourceLineNo">3399</span>     * This may seem like a counterintuitive way to reset the statsitics.  Why<a name="line.3399"></a>
-<span class="sourceLineNo">3400</span>     * can't we just zero out all the thread-local data?  Well, thread-local<a name="line.3400"></a>
-<span class="sourceLineNo">3401</span>     * data can only be modified by the thread that owns it.  If we tried to<a name="line.3401"></a>
-<span class="sourceLineNo">3402</span>     * modify the thread-local data from this thread, our modification might get<a name="line.3402"></a>
-<span class="sourceLineNo">3403</span>     * interleaved with a read-modify-write operation done by the thread that<a name="line.3403"></a>
-<span class="sourceLineNo">3404</span>     * owns the data.  That would result in our update getting lost.<a name="line.3404"></a>
-<span class="sourceLineNo">3405</span>     *<a name="line.3405"></a>
-<span class="sourceLineNo">3406</span>     * The approach used here avoids this problem because it only ever reads<a name="line.3406"></a>
-<span class="sourceLineNo">3407</span>     * (not writes) the thread-local data.  Both reads and writes to rootData<a name="line.3407"></a>
-<span class="sourceLineNo">3408</span>     * are done under the lock, so we're free to modify rootData from any thread<a name="line.3408"></a>
-<span class="sourceLineNo">3409</span>     * that holds the lock.<a name="line.3409"></a>
-<span class="sourceLineNo">3410</span>     */<a name="line.3410"></a>
-<span class="sourceLineNo">3411</span>    public void reset() {<a name="line.3411"></a>
-<span class="sourceLineNo">3412</span>      visitAll(new StatisticsAggregator&lt;Void&gt;() {<a name="line.3412"></a>
-<span class="sourceLineNo">3413</span>        private StatisticsData total = new StatisticsData();<a name="line.3413"></a>
-<span class="sourceLineNo">3414</span><a name="line.3414"></a>
-<span class="sourceLineNo">3415</span>        @Override<a name="line.3415"></a>
-<span class="sourceLineNo">3416</span>        public void accept(StatisticsData data) {<a name="line.3416"></a>
-<span class="sourceLineNo">3417</span>          total.add(data);<a name="line.3417"></a>
-<span class="sourceLineNo">3418</span>        }<a name="line.3418"></a>
-<span class="sourceLineNo">3419</span><a name="line.3419"></a>
-<span class="sourceLineNo">3420</span>        public Void aggregate() {<a name="line.3420"></a>
-<span class="sourceLineNo">3421</span>          total.negate();<a name="line.3421"></a>
-<span class="sourceLineNo">3422</span>          rootData.add(total);<a name="line.3422"></a>
-<span class="sourceLineNo">3423</span>          return null;<a name="line.3423"></a>
-<span class="sourceLineNo">3424</span>        }<a name="line.3424"></a>
-<span class="sourceLineNo">3425</span>      });<a name="line.3425"></a>
-<span class="sourceLineNo">3426</span>    }<a name="line.3426"></a>
-<span class="sourceLineNo">3427</span>    <a name="line.3427"></a>
-<span class="sourceLineNo">3428</span>    /**<a name="line.3428"></a>
-<span class="sourceLineNo">3429</span>     * Get the uri scheme associated with this statistics object.<a name="line.3429"></a>
-<span class="sourceLineNo">3430</span>     * @return the schema associated with this set of statistics<a name="line.3430"></a>
-<span class="sourceLineNo">3431</span>     */<a name="line.3431"></a>
-<span class="sourceLineNo">3432</span>    public String getScheme() {<a name="line.3432"></a>
-<span class="sourceLineNo">3433</span>      return scheme;<a name="line.3433"></a>
-<span class="sourceLineNo">3434</span>    }<a name="line.3434"></a>
-<span class="sourceLineNo">3435</span><a name="line.3435"></a>
-<span class="sourceLineNo">3436</span>    @VisibleForTesting<a name="line.3436"></a>
-<span class="sourceLineNo">3437</span>    synchronized int getAllThreadLocalDataSize() {<a name="line.3437"></a>
-<span class="sourceLineNo">3438</span>      return allData.size();<a name="line.3438"></a>
-<span class="sourceLineNo">3439</span>    }<a name="line.3439"></a>
-<span class="sourceLineNo">3440</span>  }<a name="line.3440"></a>
-<span class="sourceLineNo">3441</span>  <a name="line.3441"></a>
-<span class="sourceLineNo">3442</span>  /**<a name="line.3442"></a>
-<span class="sourceLineNo">3443</span>   * Get the Map of Statistics object indexed by URI Scheme.<a name="line.3443"></a>
-<span class="sourceLineNo">3444</span>   * @return a Map having a key as URI scheme and value as Statistics object<a name="line.3444"></a>
-<span class="sourceLineNo">3445</span>   * @deprecated use {@link #getAllStatistics} instead<a name="line.3445"></a>
-<span class="sourceLineNo">3446</span>   */<a name="line.3446"></a>
-<span class="sourceLineNo">3447</span>  @Deprecated<a name="line.3447"></a>
-<span class="sourceLineNo">3448</span>  public static synchronized Map&lt;String, Statistics&gt; getStatistics() {<a name="line.3448"></a>
-<span class="sourceLineNo">3449</span>    Map&lt;String, Statistics&gt; result = new HashMap&lt;String, Statistics&gt;();<a name="line.3449"></a>
-<span class="sourceLineNo">3450</span>    for(Statistics stat: statisticsTable.values()) {<a name="line.3450"></a>
-<span class="sourceLineNo">3451</span>      result.put(stat.getScheme(), stat);<a name="line.3451"></a>
-<span class="sourceLineNo">3452</span>    }<a name="line.3452"></a>
-<span class="sourceLineNo">3453</span>    return result;<a name="line.3453"></a>
-<span class="sourceLineNo">3454</span>  }<a name="line.3454"></a>
-<span class="sourceLineNo">3455</span><a name="line.3455"></a>
-<span class="sourceLineNo">3456</span>  /**<a name="line.3456"></a>
-<span class="sourceLineNo">3457</span>   * Return the FileSystem classes that have Statistics<a name="line.3457"></a>
-<span class="sourceLineNo">3458</span>   */<a name="line.3458"></a>
-<span class="sourceLineNo">3459</span>  public static synchronized List&lt;Statistics&gt; getAllStatistics() {<a name="line.3459"></a>
-<span class="sourceLineNo">3460</span>    return new ArrayList&lt;Statistics&gt;(statisticsTable.values());<a name="line.3460"></a>
-<span class="sourceLineNo">3461</span>  }<a name="line.3461"></a>
-<span class="sourceLineNo">3462</span>  <a name="line.3462"></a>
-<span class="sourceLineNo">3463</span>  /**<a name="line.3463"></a>
-<span class="sourceLineNo">3464</span>   * Get the statistics for a particular file system<a name="line.3464"></a>
-<span class="sourceLineNo">3465</span>   * @param cls the class to lookup<a name="line.3465"></a>
-<span class="sourceLineNo">3466</span>   * @return a statistics object<a name="line.3466"></a>
-<span class="sourceLineNo">3467</span>   */<a name="line.3467"></a>
-<span class="sourceLineNo">3468</span>  public static synchronized <a name="line.3468"></a>
-<span class="sourceLineNo">3469</span>  Statistics getStatistics(String scheme, Class&lt;? extends FileSystem&gt; cls) {<a name="line.3469"></a>
-<span class="sourceLineNo">3470</span>    Statistics result = statisticsTable.get(cls);<a name="line.3470"></a>
-<span class="sourceLineNo">3471</span>    if (result == null) {<a name="line.3471"></a>
-<span class="sourceLineNo">3472</span>      result = new Statistics(scheme);<a name="line.3472"></a>
-<span class="sourceLineNo">3473</span>      statisticsTable.put(cls, result);<a name="line.3473"></a>
-<span class="sourceLineNo">3474</span>    }<a name="line.3474"></a>
-<span class="sourceLineNo">3475</span>    return result;<a name="line.3475"></a>
-<span class="sourceLineNo">3476</span>  }<a name="line.3476"></a>
-<span class="sourceLineNo">3477</span>  <a name="line.3477"></a>
-<span class="sourceLineNo">3478</span>  /**<a name="line.3478"></a>
-<span class="sourceLineNo">3479</span>   * Reset all statistics for all file systems<a name="line.3479"></a>
-<span class="sourceLineNo">3480</span>   */<a name="line.3480"></a>
-<span class="sourceLineNo">3481</span>  public static synchronized void clearStatistics() {<a name="line.3481"></a>
-<span class="sourceLineNo">3482</span>    for(Statistics stat: statisticsTable.values()) {<a name="line.3482"></a>
-<span class="sourceLineNo">3483</span>      stat.reset();<a name="line.3483"></a>
-<span class="sourceLineNo">3484</span>    }<a name="line.3484"></a>
-<span class="sourceLineNo">3485</span>  }<a name="line.3485"></a>
-<span class="sourceLineNo">3486</span><a name="line.3486"></a>
-<span class="sourceLineNo">3487</span>  /**<a name="line.3487"></a>
-<span class="sourceLineNo">3488</span>   * Print all statistics for all file systems<a name="line.3488"></a>
-<span class="sourceLineNo">3489</span>   */<a name="line.3489"></a>
-<span class="sourceLineNo">3490</span>  public static synchronized<a name="line.3490"></a>
-<span class="sourceLineNo">3491</span>  void printStatistics() throws IOException {<a name="line.3491"></a>
-<span class="sourceLineNo">3492</span>    for (Map.Entry&lt;Class&lt;? extends FileSystem&gt;, Statistics&gt; pair: <a name="line.3492"></a>
-<span class="sourceLineNo">3493</span>            statisticsTable.entrySet()) {<a name="line.3493"></a>
-<span class="sourceLineNo">3494</span>      System.out.println("  FileSystem " + pair.getKey().getName() + <a name="line.3494"></a>
-<span class="sourceLineNo">3495</span>                         ": " + pair.getValue());<a name="line.3495"></a>
-<span class="sourceLineNo">3496</span>    }<a name="line.3496"></a>
-<span class="sourceLineNo">3497</span>  }<a name="line.3497"></a>
-<span class="sourceLineNo">3498</span><a name="line.3498"></a>
-<span class="sourceLineNo">3499</span>  // Symlinks are temporarily disabled - see HADOOP-10020 and HADOOP-10052<a name="line.3499"></a>
-<span class="sourceLineNo">3500</span>  private static boolean symlinksEnabled = false;<a name="line.3500"></a>
-<span class="sourceLineNo">3501</span><a name="line.3501"></a>
-<span class="sourceLineNo">3502</span>  private static Configuration conf = null;<a name="line.3502"></a>
-<span class="sourceLineNo">3503</span><a name="line.3503"></a>
-<span class="sourceLineNo">3504</span>  @VisibleForTesting<a name="line.3504"></a>
-<span class="sourceLineNo">3505</span>  public static boolean areSymlinksEnabled() {<a name="line.3505"></a>
-<span class="sourceLineNo">3506</span>    return symlinksEnabled;<a name="line.3506"></a>
-<span class="sourceLineNo">3507</span>  }<a name="line.3507"></a>
-<span class="sourceLineNo">3508</span><a name="line.3508"></a>
-<span class="sourceLineNo">3509</span>  @VisibleForTesting<a name="line.3509"></a>
-<span class="sourceLineNo">3510</span>  public static void enableSymlinks() {<a name="line.3510"></a>
-<span class="sourceLineNo">3511</span>    symlinksEnabled = true;<a name="line.3511"></a>
-<span class="sourceLineNo">3512</span>  }<a name="line.3512"></a>
-<span class="sourceLineNo">3513</span>}<a name="line.3513"></a>
+<span class="sourceLineNo">3377</span><a name="line.3377"></a>
+<span class="sourceLineNo">3378</span>    @Override<a name="line.3378"></a>
+<span class="sourceLineNo">3379</span>    public String toString() {<a name="line.3379"></a>
+<span class="sourceLineNo">3380</span>      return visitAll(new StatisticsAggregator&lt;String&gt;() {<a name="line.3380"></a>
+<span class="sourceLineNo">3381</span>        private StatisticsData total = new StatisticsData();<a name="line.3381"></a>
+<span class="sourceLineNo">3382</span><a name="line.3382"></a>
+<span class="sourceLineNo">3383</span>        @Override<a name="line.3383"></a>
+<span class="sourceLineNo">3384</span>        public void accept(StatisticsData data) {<a name="line.3384"></a>
+<span class="sourceLineNo">3385</span>          total.add(data);<a name="line.3385"></a>
+<span class="sourceLineNo">3386</span>        }<a name="line.3386"></a>
+<span class="sourceLineNo">3387</span><a name="line.3387"></a>
+<span class="sourceLineNo">3388</span>        public String aggregate() {<a name="line.3388"></a>
+<span class="sourceLineNo">3389</span>          return total.toString();<a name="line.3389"></a>
+<span class="sourceLineNo">3390</span>        }<a name="line.3390"></a>
+<span class="sourceLineNo">3391</span>      });<a name="line.3391"></a>
+<span class="sourceLineNo">3392</span>    }<a name="line.3392"></a>
+<span class="sourceLineNo">3393</span><a name="line.3393"></a>
+<span class="sourceLineNo">3394</span>    /**<a name="line.3394"></a>
+<span class="sourceLineNo">3395</span>     * Resets all statistics to 0.<a name="line.3395"></a>
+<span class="sourceLineNo">3396</span>     *<a name="line.3396"></a>
+<span class="sourceLineNo">3397</span>     * In order to reset, we add up all the thread-local statistics data, and<a name="line.3397"></a>
+<span class="sourceLineNo">3398</span>     * set rootData to the negative of that.<a name="line.3398"></a>
+<span class="sourceLineNo">3399</span>     *<a name="line.3399"></a>
+<span class="sourceLineNo">3400</span>     * This may seem like a counterintuitive way to reset the statsitics.  Why<a name="line.3400"></a>
+<span class="sourceLineNo">3401</span>     * can't we just zero out all the thread-local data?  Well, thread-local<a name="line.3401"></a>
+<span class="sourceLineNo">3402</span>     * data can only be modified by the thread that owns it.  If we tried to<a name="line.3402"></a>
+<span class="sourceLineNo">3403</span>     * modify the thread-local data from this thread, our modification might get<a name="line.3403"></a>
+<span class="sourceLineNo">3404</span>     * interleaved with a read-modify-write operation done by the thread that<a name="line.3404"></a>
+<span class="sourceLineNo">3405</span>     * owns the data.  That would result in our update getting lost.<a name="line.3405"></a>
+<span class="sourceLineNo">3406</span>     *<a name="line.3406"></a>
+<span class="sourceLineNo">3407</span>     * The approach used here avoids this problem because it only ever reads<a name="line.3407"></a>
+<span class="sourceLineNo">3408</span>     * (not writes) the thread-local data.  Both reads and writes to rootData<a name="line.3408"></a>
+<span class="sourceLineNo">3409</span>     * are done under the lock, so we're free to modify rootData from any thread<a name="line.3409"></a>
+<span class="sourceLineNo">3410</span>     * that holds the lock.<a name="line.3410"></a>
+<span class="sourceLineNo">3411</span>     */<a name="line.3411"></a>
+<span class="sourceLineNo">3412</span>    public void reset() {<a name="line.3412"></a>
+<span class="sourceLineNo">3413</span>      visitAll(new StatisticsAggregator&lt;Void&gt;() {<a name="line.3413"></a>
+<span class="sourceLineNo">3414</span>        private StatisticsData total = new StatisticsData();<a name="line.3414"></a>
+<span class="sourceLineNo">3415</span><a name="line.3415"></a>
+<span class="sourceLineNo">3416</span>        @Override<a name="line.3416"></a>
+<span class="sourceLineNo">3417</span>        public void accept(StatisticsData data) {<a name="line.3417"></a>
+<span class="sourceLineNo">3418</span>          total.add(data);<a name="line.3418"></a>
+<span class="sourceLineNo">3419</span>        }<a name="line.3419"></a>
+<span class="sourceLineNo">3420</span><a name="line.3420"></a>
+<span class="sourceLineNo">3421</span>        public Void aggregate() {<a name="line.3421"></a>
+<span class="sourceLineNo">3422</span>          total.negate();<a name="line.3422"></a>
+<span class="sourceLineNo">3423</span>          rootData.add(total);<a name="line.3423"></a>
+<span class="sourceLineNo">3424</span>          return null;<a name="line.3424"></a>
+<span class="sourceLineNo">3425</span>        }<a name="line.3425"></a>
+<span class="sourceLineNo">3426</span>      });<a name="line.3426"></a>
+<span class="sourceLineNo">3427</span>    }<a name="line.3427"></a>
+<span class="sourceLineNo">3428</span>    <a name="line.3428"></a>
+<span class="sourceLineNo">3429</span>    /**<a name="line.3429"></a>
+<span class="sourceLineNo">3430</span>     * Get the uri scheme associated with this statistics object.<a name="line.3430"></a>
+<span class="sourceLineNo">3431</span>     * @return the schema associated with this set of statistics<a name="line.3431"></a>
+<span class="sourceLineNo">3432</span>     */<a name="line.3432"></a>
+<span class="sourceLineNo">3433</span>    public String getScheme() {<a name="line.3433"></a>
+<span class="sourceLineNo">3434</span>      return scheme;<a name="line.3434"></a>
+<span class="sourceLineNo">3435</span>    }<a name="line.3435"></a>
+<span class="sourceLineNo">3436</span><a name="line.3436"></a>
+<span class="sourceLineNo">3437</span>    @VisibleForTesting<a name="line.3437"></a>
+<span class="sourceLineNo">3438</span>    synchronized int getAllThreadLocalDataSize() {<a name="line.3438"></a>
+<span class="sourceLineNo">3439</span>      return allData.size();<a name="line.3439"></a>
+<span class="sourceLineNo">3440</span>    }<a name="line.3440"></a>
+<span class="sourceLineNo">3441</span>  }<a name="line.3441"></a>
+<span class="sourceLineNo">3442</span>  <a name="line.3442"></a>
+<span class="sourceLineNo">3443</span>  /**<a name="line.3443"></a>
+<span class="sourceLineNo">3444</span>   * Get the Map of Statistics object indexed by URI Scheme.<a name="line.3444"></a>
+<span class="sourceLineNo">3445</span>   * @return a Map having a key as URI scheme and value as Statistics object<a name="line.3445"></a>
+<span class="sourceLineNo">3446</span>   * @deprecated use {@link #getAllStatistics} instead<a name="line.3446"></a>
+<span class="sourceLineNo">3447</span>   */<a name="line.3447"></a>
+<span class="sourceLineNo">3448</span>  @Deprecated<a name="line.3448"></a>
+<span class="sourceLineNo">3449</span>  public static synchronized Map&lt;String, Statistics&gt; getStatistics() {<a name="line.3449"></a>
+<span class="sourceLineNo">3450</span>    Map&lt;String, Statistics&gt; result = new HashMap&lt;String, Statistics&gt;();<a name="line.3450"></a>
+<span class="sourceLineNo">3451</span>    for(Statistics stat: statisticsTable.values()) {<a name="line.3451"></a>
+<span class="sourceLineNo">3452</span>      result.put(stat.getScheme(), stat);<a name="line.3452"></a>
+<span class="sourceLineNo">3453</span>    }<a name="line.3453"></a>
+<span class="sourceLineNo">3454</span>    return result;<a name="line.3454"></a>
+<span class="sourceLineNo">3455</span>  }<a name="line.3455"></a>
+<span class="sourceLineNo">3456</span><a name="line.3456"></a>
+<span class="sourceLineNo">3457</span>  /**<a name="line.3457"></a>
+<span class="sourceLineNo">3458</span>   * Return the FileSystem classes that have Statistics<a name="line.3458"></a>
+<span class="sourceLineNo">3459</span>   */<a name="line.3459"></a>
+<span class="sourceLineNo">3460</span>  public static synchronized List&lt;Statistics&gt; getAllStatistics() {<a name="line.3460"></a>
+<span class="sourceLineNo">3461</span>    return new ArrayList&lt;Statistics&gt;(statisticsTable.values());<a name="line.3461"></a>
+<span class="sourceLineNo">3462</span>  }<a name="line.3462"></a>
+<span class="sourceLineNo">3463</span>  <a name="line.3463"></a>
+<span class="sourceLineNo">3464</span>  /**<a name="line.3464"></a>
+<span class="sourceLineNo">3465</span>   * Get the statistics for a particular file system<a name="line.3465"></a>
+<span class="sourceLineNo">3466</span>   * @param cls the class to lookup<a name="line.3466"></a>
+<span class="sourceLineNo">3467</span>   * @return a statistics object<a name="line.3467"></a>
+<span class="sourceLineNo">3468</span>   */<a name="line.3468"></a>
+<span class="sourceLineNo">3469</span>  public static synchronized <a name="line.3469"></a>
+<span class="sourceLineNo">3470</span>  Statistics getStatistics(String scheme, Class&lt;? extends FileSystem&gt; cls) {<a name="line.3470"></a>
+<span class="sourceLineNo">3471</span>    Statistics result = statisticsTable.get(cls);<a name="line.3471"></a>
+<span class="sourceLineNo">3472</span>    if (result == null) {<a name="line.3472"></a>
+<span class="sourceLineNo">3473</span>      result = new Statistics(scheme);<a name="line.3473"></a>
+<span class="sourceLineNo">3474</span>      statisticsTable.put(cls, result);<a name="line.3474"></a>
+<span class="sourceLineNo">3475</span>    }<a name="line.3475"></a>
+<span class="sourceLineNo">3476</span>    return result;<a name="line.3476"></a>
+<span class="sourceLineNo">3477</span>  }<a name="line.3477"></a>
+<span class="sourceLineNo">3478</span>  <a name="line.3478"></a>
+<span class="sourceLineNo">3479</span>  /**<a name="line.3479"></a>
+<span class="sourceLineNo">3480</span>   * Reset all statistics for all file systems<a name="line.3480"></a>
+<span class="sourceLineNo">3481</span>   */<a name="line.3481"></a>
+<span class="sourceLineNo">3482</span>  public static synchronized void clearStatistics() {<a name="line.3482"></a>
+<span class="sourceLineNo">3483</span>    for(Statistics stat: statisticsTable.values()) {<a name="line.3483"></a>
+<span class="sourceLineNo">3484</span>      stat.reset();<a name="line.3484"></a>
+<span class="sourceLineNo">3485</span>    }<a name="line.3485"></a>
+<span class="sourceLineNo">3486</span>  }<a name="line.3486"></a>
+<span class="sourceLineNo">3487</span><a name="line.3487"></a>
+<span class="sourceLineNo">3488</span>  /**<a name="line.3488"></a>
+<span class="sourceLineNo">3489</span>   * Print all statistics for all file systems<a name="line.3489"></a>
+<span class="sourceLineNo">3490</span>   */<a name="line.3490"></a>
+<span class="sourceLineNo">3491</span>  public static synchronized<a name="line.3491"></a>
+<span class="sourceLineNo">3492</span>  void printStatistics() throws IOException {<a name="line.3492"></a>
+<span class="sourceLineNo">3493</span>    for (Map.Entry&lt;Class&lt;? extends FileSystem&gt;, Statistics&gt; pair: <a name="line.3493"></a>
+<span class="sourceLineNo">3494</span>            statisticsTable.entrySet()) {<a name="line.3494"></a>
+<span class="sourceLineNo">3495</span>      System.out.println("  FileSystem " + pair.getKey().getName() + <a name="line.3495"></a>
+<span class="sourceLineNo">3496</span>                         ": " + pair.getValue());<a name="line.3496"></a>
+<span class="sourceLineNo">3497</span>    }<a name="line.3497"></a>
+<span class="sourceLineNo">3498</span>  }<a name="line.3498"></a>
+<span class="sourceLineNo">3499</span><a name="line.3499"></a>
+<span class="sourceLineNo">3500</span>  // Symlinks are temporarily disabled - see HADOOP-10020 and HADOOP-10052<a name="line.3500"></a>
+<span class="sourceLineNo">3501</span>  private static boolean symlinksEnabled = false;<a name="line.3501"></a>
+<span class="sourceLineNo">3502</span><a name="line.3502"></a>
+<span class="sourceLineNo">3503</span>  private static Configuration conf = null;<a name="line.3503"></a>
+<span class="sourceLineNo">3504</span><a name="line.3504"></a>
+<span class="sourceLineNo">3505</span>  @VisibleForTesting<a name="line.3505"></a>
+<span class="sourceLineNo">3506</span>  public static boolean areSymlinksEnabled() {<a name="line.3506"></a>
+<span class="sourceLineNo">3507</span>    return symlinksEnabled;<a name="line.3507"></a>
+<span class="sourceLineNo">3508</span>  }<a name="line.3508"></a>
+<span class="sourceLineNo">3509</span><a name="line.3509"></a>
+<span class="sourceLineNo">3510</span>  @VisibleForTesting<a name="line.3510"></a>
+<span class="sourceLineNo">3511</span>  public static void enableSymlinks() {<a name="line.3511"></a>
+<span class="sourceLineNo">3512</span>    symlinksEnabled = true;<a name="line.3512"></a>
+<span class="sourceLineNo">3513</span>  }<a name="line.3513"></a>
+<span class="sourceLineNo">3514</span>}<a name="line.3514"></a>
 
 
 
