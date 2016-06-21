@@ -91,6 +91,14 @@
   </description>
 </property>
 
+<property>
+  <name>mapreduce.job.max.map</name>
+  <value>-1</value>
+  <description>Limit on the number of map tasks allowed per job.
+  There is no limit if this value is negative.
+  </description>
+</property>
+
   <property>
     <name>mapreduce.job.reducer.preempt.delay.sec</name>
     <value>0</value>
@@ -347,6 +355,16 @@
   envrionment will be OS dependent:
   For linux, use LD_LIBRARY_PATH=$HADOOP_COMMON_HOME/lib/native.
   For windows, use PATH = %PATH%;%HADOOP_COMMON_HOME%\\bin.
+  </description>
+</property>
+
+<property>
+  <name>yarn.app.mapreduce.am.log.level</name>
+  <value>INFO</value>
+  <description>The logging level for the MR ApplicationMaster. The allowed
+  levels are: OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE and ALL.
+  The setting here could be overriden if "mapreduce.job.log4j-properties-file"
+  is set.
   </description>
 </property>
 
@@ -1850,6 +1868,40 @@
   sideband writes from subprocesses (e.g.: streaming jobs), etc.
   Negative values disable the limit.
   default is -1</description>
+</property>
+
+<property>
+  <description>
+    Enable the CSRF filter for the job history web app
+  </description>
+  <name>mapreduce.jobhistory.webapp.rest-csrf.enabled</name>
+  <value>false</value>
+</property>
+
+<property>
+  <description>
+    Optional parameter that indicates the custom header name to use for CSRF
+    protection.
+  </description>
+  <name>mapreduce.jobhistory.webapp.rest-csrf.custom-header</name>
+  <value>X-XSRF-Header</value>
+</property>
+
+<property>
+  <description>
+    Optional parameter that indicates the list of HTTP methods that do not
+    require CSRF protection
+  </description>
+  <name>mapreduce.jobhistory.webapp.rest-csrf.methods-to-ignore</name>
+  <value>GET,OPTIONS,HEAD</value>
+</property>
+
+<property>
+  <description>
+    Value of the xframe-options
+  </description>
+  <name>mapreduce.jobhistory.webapp.xfs-filter.xframe-options</name>
+  <value>SAMEORIGIN</value>
 </property>
 
 </configuration>

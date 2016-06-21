@@ -1,6 +1,4 @@
 org.apache.hadoop
-org.apache.hadoop.ant
-org.apache.hadoop.ant.condition
 org.apache.hadoop.classification
 org.apache.hadoop.conf
 org.apache.hadoop.contrib.bkjournal
@@ -17,6 +15,8 @@ org.apache.hadoop.examples.pi.math
 org.apache.hadoop.examples.terasort
 org.apache.hadoop.filecache
 org.apache.hadoop.fs
+org.apache.hadoop.fs.adl
+org.apache.hadoop.fs.adl.oauth2
 org.apache.hadoop.fs.azure
 org.apache.hadoop.fs.azure.metrics
 org.apache.hadoop.fs.crypto
@@ -25,7 +25,6 @@ org.apache.hadoop.fs.http.client
 org.apache.hadoop.fs.http.server
 org.apache.hadoop.fs.permission
 org.apache.hadoop.fs.s3
-org.apache.hadoop.fs.s3a
 org.apache.hadoop.fs.s3native
 org.apache.hadoop.fs.sftp
 org.apache.hadoop.fs.shell.find
@@ -62,7 +61,6 @@ org.apache.hadoop.hdfs.server.balancer
 org.apache.hadoop.hdfs.server.blockmanagement
 org.apache.hadoop.hdfs.server.common
 org.apache.hadoop.hdfs.server.datanode
-org.apache.hadoop.hdfs.server.datanode.erasurecode
 org.apache.hadoop.hdfs.server.datanode.fsdataset
 org.apache.hadoop.hdfs.server.datanode.fsdataset.impl
 org.apache.hadoop.hdfs.server.datanode.metrics
@@ -98,7 +96,6 @@ org.apache.hadoop.io.erasurecode.codec
 org.apache.hadoop.io.erasurecode.coder
 org.apache.hadoop.io.erasurecode.coder.util
 org.apache.hadoop.io.erasurecode.grouper
-org.apache.hadoop.io.erasurecode.rawcoder
 org.apache.hadoop.io.file.tfile
 org.apache.hadoop.io.serializer
 org.apache.hadoop.io.serializer.avro
@@ -167,9 +164,6 @@ org.apache.hadoop.maven.plugin.cmakebuilder
 org.apache.hadoop.maven.plugin.protoc
 org.apache.hadoop.maven.plugin.util
 org.apache.hadoop.maven.plugin.versioninfo
-org.apache.hadoop.metrics
-org.apache.hadoop.metrics.ganglia
-org.apache.hadoop.metrics.spi
 org.apache.hadoop.metrics2
 org.apache.hadoop.metrics2.annotation
 org.apache.hadoop.metrics2.filter
