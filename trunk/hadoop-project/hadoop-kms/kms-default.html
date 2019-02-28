@@ -52,6 +52,16 @@
     </td>
 </tr>
 <tr>
+<td><a name="hadoop.http.socket.backlog.size">hadoop.http.socket.backlog.size</a></td><td>500</td><td>
+      KMS Server accept queue size.
+    </td>
+</tr>
+<tr>
+<td><a name="hadoop.http.idle_timeout.ms">hadoop.http.idle_timeout.ms</a></td><td>1000</td><td>
+      KMS Server connection timeout in milliseconds.
+    </td>
+</tr>
+<tr>
 <td><a name="hadoop.kms.key.provider.uri">hadoop.kms.key.provider.uri</a></td><td>jceks://file@/${user.home}/kms.keystore</td><td>
       URI of the backing KeyProvider for the KMS.
     </td>
@@ -153,6 +163,27 @@
       class names. Default is the text-format SimpleKMSAuditLogger only.
       If this is not configured, default will be used.
     </td>
+</tr>
+<tr>
+<td><a name="hadoop.kms.key.authorization.enable">hadoop.kms.key.authorization.enable</a></td><td>true</td><td>Boolean property to Enable/Disable per Key authorization</td>
+</tr>
+<tr>
+<td><a name="hadoop.security.kms.encrypted.key.cache.size">hadoop.security.kms.encrypted.key.cache.size</a></td><td>100</td><td>The size of the cache. This is the maximum number of EEKs that
+      can be cached under each key name.</td>
+</tr>
+<tr>
+<td><a name="hadoop.security.kms.encrypted.key.cache.low.watermark">hadoop.security.kms.encrypted.key.cache.low.watermark</a></td><td>0.3</td><td>A low watermark on the cache. For each key name, if after a get call,
+      the number of cached EEKs are less than (size * low watermark),
+      then the cache under this key name will be filled asynchronously.
+      For each key name, only 1 thread could be running for the asynchronous filling.</td>
+</tr>
+<tr>
+<td><a name="hadoop.security.kms.encrypted.key.cache.num.fill.threads">hadoop.security.kms.encrypted.key.cache.num.fill.threads</a></td><td>2</td><td>The maximum number of asynchronous threads overall, across key names,
+      allowed to fill the queue in a cache.</td>
+</tr>
+<tr>
+<td><a name="hadoop.security.kms.encrypted.key.cache.expiry">hadoop.security.kms.encrypted.key.cache.expiry</a></td><td>43200000</td><td>The cache expiry time, in milliseconds. Internally Guava cache is used as the cache implementation.
+      The expiry approach is expireAfterAccess</td>
 </tr>
 </table>
 </body>
