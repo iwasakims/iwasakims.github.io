@@ -1,5 +1,8 @@
 csi.v0
 org.apache.hadoop
+org.apache.hadoop.applications.mawo.server.common
+org.apache.hadoop.applications.mawo.server.master.job
+org.apache.hadoop.applications.mawo.server.worker
 org.apache.hadoop.classification
 org.apache.hadoop.conf
 org.apache.hadoop.contrib.utils.join

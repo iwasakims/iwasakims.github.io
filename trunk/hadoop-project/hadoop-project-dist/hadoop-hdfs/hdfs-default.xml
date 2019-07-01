@@ -320,6 +320,13 @@
   </property>
 
 <property>
+  <name>dfs.datanode.httpserver.filter.handlers</name>
+  <value>org.apache.hadoop.hdfs.server.datanode.web.RestCsrfPreventionFilterHandler</value>
+  <description>Comma separated list of Netty servlet-style filter handlers to inject into the Datanode WebHDFS I/O path
+  </description>
+</property>
+
+<property>
   <name>dfs.default.chunk.view.size</name>
   <value>32768</value>
   <description>The number of bytes to view for a file on the browser.
@@ -2527,18 +2534,6 @@
 </property>
 
 <property>
-  <name>dfs.datanode.cache.loader.class</name>
-  <value>org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.MemoryMappableBlockLoader</value>
-  <description>
-    Currently, the available cache loaders are MemoryMappableBlockLoader, PmemMappableBlockLoader.
-    By default, MemoryMappableBlockLoader is used and it maps block replica into memory.
-    PmemMappableBlockLoader can map block to persistent memory with mapped byte buffer, which is
-    implemented by Java code. The value of dfs.datanode.cache.pmem.dirs specifies the persistent
-    memory directory.
-  </description>
-</property>
-
-<property>
   <name>dfs.datanode.max.locked.memory</name>
   <value>0</value>
   <description>
@@ -2552,18 +2547,6 @@
 
     If the native libraries are not available to the DataNode, this
     configuration has no effect.
-  </description>
-</property>
-
-<property>
-  <name>dfs.datanode.cache.pmem.capacity</name>
-  <value>0</value>
-  <description>
-    The amount of persistent memory in bytes that can be used to cache block
-    replicas to persistent memory. Currently, persistent memory is only enabled
-    in HDFS Centralized Cache Management feature.
-
-    By default, this parameter is 0, which disables persistent memory caching.
   </description>
 </property>
 
@@ -3206,6 +3189,15 @@
     tries to get local NN thread dump after local NN becomes
     SERVICE_NOT_RESPONDING or SERVICE_UNHEALTHY.
     If it is set to zero, DFS ZKFC won't get local NN thread dump.
+  </description>
+</property>
+
+<property>
+  <name>dfs.ha.nn.not-become-active-in-safemode</name>
+  <value>false</value>
+  <description>
+    This will prevent safe mode namenodes to become active while other standby
+    namenodes might be ready to serve requests when it is set to true.
   </description>
 </property>
 
@@ -3924,6 +3916,7 @@
   <value>16</value>
   <description>
     Socket cache capacity (in entries) for short-circuit reads.
+    If this value is set to 0, the client socket cache is disabled.
   </description>
 </property>
 
@@ -5359,6 +5352,14 @@
       When dfs.datanode.overwrite.downstream.derived.qop is set to true,
       this configuration specifies the new QOP to be used to overwrite
       inter-DN QOP.
+    </description>
+  </property>
+
+  <property>
+    <name>dfs.namenode.blockreport.queue.size</name>
+    <value>1024</value>
+    <description>
+      The queue size of BlockReportProcessingThread in BlockManager.
     </description>
   </property>
 </configuration>

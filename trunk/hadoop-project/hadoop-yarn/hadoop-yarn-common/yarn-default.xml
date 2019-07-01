@@ -1345,6 +1345,14 @@
   </property>
 
   <property>
+    <description>If set to true, the older application log directory
+    will be considered while fetching application logs.
+    </description>
+    <name>yarn.nodemanager.remote-app-log-dir-include-older</name>
+    <value>true</value>
+  </property>
+
+  <property>
     <description>Generate additional logs about container launches.
     Currently, this creates a copy of the launch script and lists the
     directory contents of the container work dir. When listing directory
@@ -3342,6 +3350,15 @@
 
   <property>
     <description>
+      Maximum number of opportunistic containers to be allocated per
+      Application Master heartbeat.
+    </description>
+    <name>yarn.resourcemanager.opportunistic.max.container-allocation.per.am.heartbeat</name>
+    <value>-1</value>
+  </property>
+
+  <property>
+    <description>
     Number of nodes to be used by the Opportunistic Container Allocator for
     dispatching containers during container allocation.
     </description>
@@ -4169,5 +4186,29 @@
     </description>
     <name>yarn.nodemanager.csi-driver.names</name>
     <value></value>
+  </property>
+
+  <property>
+    <description>The cleanup interval for activities in milliseconds.</description>
+    <name>yarn.resourcemanager.activities-manager.cleanup-interval-ms</name>
+    <value>5000</value>
+  </property>
+
+  <property>
+    <description>Time to live for scheduler activities in milliseconds.</description>
+    <name>yarn.resourcemanager.activities-manager.scheduler-activities.ttl-ms</name>
+    <value>600000</value>
+  </property>
+
+  <property>
+    <description>Time to live for app activities in milliseconds.</description>
+    <name>yarn.resourcemanager.activities-manager.app-activities.ttl-ms</name>
+    <value>600000</value>
+  </property>
+
+  <property>
+    <description>Max queue length for app activities.</description>
+    <name>yarn.resourcemanager.activities-manager.app-activities.max-queue-length</name>
+    <value>100</value>
   </property>
 </configuration>
